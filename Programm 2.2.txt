@@ -1,0 +1,134 @@
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Scanner;
+
+
+/*
+ * 
+ * This program works out all permutations of each level up to a certain given level.
+ * After each level it checks, whether up to the this level each permutation has outlast been covered once. 
+ * If this is the case and the level we´re looking at is the smallest possible for this to be true then the this level is the Pancake-Number we´re searching for.
+ * 
+ * */
+public class Programm22_Upload {
+static Scanner keyboard = new Scanner(System.in);
+static final long startTime = System.nanoTime();	
+
+	
+
+static int pancake_count;
+static int pancake_number;
+static int level2print;
+static int tempCounter = 1;
+static String mainChanger;      
+static int pancake_count_factorial;
+static String permInt;
+
+
+static int temp2 = 0;
+public static String getPermint(int inputInt) {
+	char[] alphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
+	String outputInt = "1";
+	for(int i = 2; i<=inputInt; i++) {
+		
+		if(i>=10) {
+			outputInt+=alphabet[i-10];
+		}
+		else {outputInt+=i;}
+	}
+	return outputInt;
+}
+public static int factorial(int inputInt) {
+	int outputInt = 1;
+	for(int i = 1; i<=inputInt; i++) {
+		outputInt*=i;
+			}
+	
+	return outputInt;
+}
+public static String reverse(String a, int swap){
+	
+     char[] charArray = a.toCharArray();
+     for(int i = 0; i < swap/2; i++){
+		 	char checker = charArray[i];
+		 	charArray[i]= charArray[swap-1-i];
+		 	charArray[swap-1-i] = checker;
+     
+}    
+   
+     String output = String.valueOf(charArray);
+     charArray= null;
+     return output;
+}
+
+
+
+public static void main(String  args[]) {
+	System.out.println("Size of sequence:");
+	pancake_count=keyboard.nextInt();
+	System.out.println("Level to check to: (suposed Pancake-Number)");
+	pancake_number = keyboard.nextInt()+1;
+	System.out.println("Which level shall be printed with all new objects?");
+	level2print =keyboard.nextInt();
+	
+	mainChanger =getPermint(pancake_count);      
+	pancake_count_factorial = factorial(pancake_count);
+	
+	
+	String [][] LevelPermutationArray = new String[2][factorial(pancake_count)];
+	HashSet<String>  PermChecker = new HashSet<String>();
+	
+	int levelCounter = 0;
+
+
+	
+
+	for(int i = 0; i<pancake_number; i++) {
+		System.out.println("---------------Level " + i  + "---------------");
+		String changer;
+		
+		if(i == 0) {changer = mainChanger; LevelPermutationArray[0][0] = changer; levelCounter++; PermChecker.add(changer);}
+		else {
+		int v= 0;		
+		for(int b = 0; b<LevelPermutationArray[0].length; b++) {
+			
+			if(!(LevelPermutationArray[0][b] ==null)) {
+			
+			changer = LevelPermutationArray[0][b];
+			for(int c = 1; c < pancake_count; c++) {
+					String input = reverse(changer,c+1);
+					
+					if(!PermChecker.contains(input)) {
+					if(i==level2print) {System.out.println(tempCounter+": "+input); tempCounter++;}
+					levelCounter++;
+					LevelPermutationArray[1][v]=input;
+					PermChecker.add(input);
+										
+					if(v+1<LevelPermutationArray[0].length) {v++;}
+					
+					
+				}
+		}}
+		
+	}
+		LevelPermutationArray[0]=LevelPermutationArray[1].clone();
+		}
+		
+		if(PermChecker.size()==pancake_count_factorial) {
+			
+			System.out.println("Total: " + levelCounter);
+			System.out.println("Pancake Number: " + i);
+			long endTime = System.nanoTime();
+			System.out.println("Finished in: " + (endTime-startTime)/1000000f + " ms.");
+			break;
+		}
+		
+		System.out.println("Total: "+levelCounter);
+		levelCounter = 0;
+		
+	}
+	
+}}

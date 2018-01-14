@@ -1,0 +1,278 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Scanner;
+
+/*
+ * 
+ * This program works out all permutations of each level up to a certain given level.
+ * After each level it checks, whether up to the this level each permutation has outlast been covered once. 
+ * If this is the case and the level we´re looking at is the smallest possible for this to be true then the this level is the Pancake-Number we´re searching for.
+ * 
+ * */
+public class Programm21_Upload {
+static int pancake_count;
+static int pancake_number;
+static int level2print;
+static int mainChanger;
+static int pancake_count_factorial;
+static int permInt;
+
+static Scanner keyboard = new Scanner(System.in);
+static int[] permutationArray = new int[pancake_count_factorial];
+
+static int temp2 = 0;
+public static int getPermint(int inputInt) {
+	int outputInt = 0;
+	for(int i = 1; i<=inputInt; i++) {
+		outputInt+=i*Math.pow(10,(inputInt-(i-1))-1);
+			}
+	return outputInt;
+}
+public static int factorial(int inputInt) {
+	int outputInt = 1;
+	for(int i = 1; i<=inputInt; i++) {
+		outputInt*=i;
+			}
+	
+	return outputInt;
+}
+public static int reverse(int a, int swap){
+	 String aString = Integer.toString(a);
+     char[] charArray = aString.toCharArray();
+     for(int i = 0; i < swap/2; i++){
+		 	char checker = charArray[i];
+		 	charArray[i]= charArray[swap-1-i];
+		 	charArray[swap-1-i] = checker;
+     
+}
+     return Integer.parseInt(String.valueOf(charArray));
+}
+
+private static void permute(int str, int l, int r)
+{
+ //get all Permutations using a recursive method
+ 
+    if (l == r){
+        permutationArray[temp2] = str;     temp2++;}
+ else
+    {
+        for (int i = l; i <= r; i++)
+        {
+            str = swap(Integer.toString(str),l,i);
+            permute(str, l+1, r);
+            str = swap(Integer.toString(str),l,i);
+        }
+    }
+}
+
+public static int swap(String a, int i, int j)
+{
+    char temp;
+    char[] charArray = a.toCharArray();
+    temp = charArray[i] ;
+    charArray[i] = charArray[j];
+    charArray[j] = temp;
+    return Integer.parseInt(String.valueOf(charArray));
+}
+
+public static int getIndex(final int[] array, final int v){
+	for (int i = 0; i < array.length; i++) {
+		  if (array[i] == v) {
+		    return i;
+		   
+		  }
+		 }
+	return -1;
+}
+
+
+public static boolean compareArrayAndArraylist(ArrayList<Integer> ArrayList1, int[] arr2input, int input2compare) {
+	
+	Integer[] arr2 = Arrays.stream( arr2input ).boxed().toArray( Integer[]::new );
+	
+    HashSet<Integer> set1 = new HashSet<Integer>(ArrayList1);
+    HashSet<Integer> set2 = new HashSet<Integer>(Arrays.asList(arr2));
+    if(input2compare == 1) {
+    return set1.equals(set2);}
+    else{
+    return set2.equals(set1);}
+    }
+
+public static int getChanger(int input1, int input2) {
+	char[] input1_array = Integer.toString(input1).toCharArray();
+	char[] input2_array = Integer.toString(input2).toCharArray();
+	for(int i = (input1_array.length-1); i>=0; i--) {
+		if(input1_array[i] != input2_array[i]) {
+			return i+1;
+			}
+	}
+	return input1_array.length;
+}
+
+public static void main(String  args[]) {
+	System.out.println("Size of sequence:");
+	pancake_count=keyboard.nextInt();
+	System.out.println("Level to check to: (suposed Pancake-Number)");
+	pancake_number = keyboard.nextInt()+1;
+	System.out.println("Which level shall be printed with all new objects?");
+	level2print =keyboard.nextInt();
+	mainChanger = getPermint(pancake_count);
+	pancake_count_factorial = factorial(pancake_count);
+	permInt = mainChanger;
+	permutationArray = new int[pancake_count_factorial];
+	long startTime = System.nanoTime();
+	/*
+	 * To Arrays are needed:
+	 * 1. An array to store all Permutations of each level
+	 * 2. An array similar in its structure to 1 which stores the reversing action used to get to this object
+	 * 
+	 * Both arrays are needed, to check, that the same reversing action is not executed on the same object two times in a row, which would NOT change the object itself. 
+	  */
+	//get Permutations
+		permute(permInt, 0, pancake_count-1);
+	int maxSize;
+	if(pancake_count==3) {maxSize=3;}
+	else{maxSize=(int) ((int)(pancake_count-1)* Math.pow(pancake_count-2,pancake_number-2));}
+	
+	int [][] LevelPermutationArray = new int[pancake_number][maxSize];
+	int[][] LevelStepArray = new int[pancake_number][maxSize];
+	ArrayList<Integer> LevelArraylist = new ArrayList<Integer>();
+	LevelArraylist.add(mainChanger);
+
+	
+	
+	//check levels
+	for(int i = 0; i<LevelPermutationArray.length; i++) {
+		
+		int changer;
+		
+		if(i == 0) {changer = mainChanger; LevelPermutationArray[0][0] = changer;
+		}
+		else {
+		int v= 0;		
+		for(int b = 0; b<LevelPermutationArray[i-1].length; b++) {
+			
+			if(!(LevelPermutationArray[i-1][b] == 0)) {
+			
+			changer = LevelPermutationArray[i-1][b];
+			for(int c = 1; c < pancake_count; c++) {
+					
+				
+				if(LevelStepArray[i-1][b+1] != c) {
+					//safe data in arrays/ ArrayList
+					LevelPermutationArray[i][v]=reverse(changer,c+1);
+					
+					LevelArraylist.add(reverse(changer,c+1));
+					if(v+1<LevelPermutationArray[0].length) {v++;}
+					LevelStepArray[i][v] = c;
+				
+				}
+		}}
+		
+	}
+		}
+		//compare ArrayList to Permutations-List
+		if(compareArrayAndArraylist(LevelArraylist, permutationArray,1)) {
+			System.out.println("Pancake Number: " +i );
+			long endTime = System.nanoTime();
+			System.out.println("Finished in: " + (endTime-startTime)/1000000 + " ms.");
+			break;
+		}
+		else {System.out.println("Level " + i + " checked");}
+	
+	}
+	
+//the following code can print out the levels separately 
+	
+	
+	ArrayList<Integer> TestArraylist = new ArrayList<Integer>();
+	int tempInt= 0;
+	int tempCounterTemp = 1;
+	System.out.println("");
+	System.out.println("All levels with the amount of new objects in each");
+for(int x = 0; x<pancake_number; x++) {
+		System.out.println("-----------------" + "Level " + x + "-----------------");
+		tempInt = 0;
+for(int y = 0; y<LevelPermutationArray[0].length; y++) {
+		
+			
+	if(!(LevelPermutationArray[x][y] == 0)) 
+			{
+			
+		
+			if(!TestArraylist.contains(LevelPermutationArray[x][y])) {
+			
+			
+			tempInt++;
+			TestArraylist.add(LevelPermutationArray[x][y]);
+			
+			if(x==level2print) {
+				if((tempCounterTemp-1) % (pancake_count-2) == 0) {System.out.println("");}
+			
+			System.out.println(tempCounterTemp+ ": " + LevelPermutationArray[x][y]);
+				
+				tempCounterTemp++;
+			}			
+			}			
+			}
+			
+			
+		}
+float percentage =(tempInt*100.0f)/permutationArray.length;
+
+	System.out.println("Total: " + tempInt);
+	tempCounterTemp =1;
+	}
+System.out.println("Write any Permutation to get the way to the sorted stage:");
+
+while(true) {
+	
+	int input = keyboard.nextInt();
+	
+	
+	ArrayList<Integer> steps = new ArrayList<Integer>();
+	int position1 = 0;
+	int position2 = 0;
+	for(int i = 0; i<LevelPermutationArray.length; i++) {
+		int tempCompare = getIndex(LevelPermutationArray[i],input);
+		if(tempCompare!=-1){
+			position1 = i;
+			position2 = tempCompare;
+			break;
+		}
+		}
+	
+		if(position1 !=0) {
+			System.out.println("They way to get to the sorted stage:");
+	for(int i = (position1-1); i>0; i--) {
+		if((position2+1)%(pancake_count-2) !=0) {
+		position2=((position2+1)+((pancake_count-2)-(position2+1)%(pancake_count-2)))/(pancake_count-2)-1;
+		}
+		else {position2 =(position2+1) / (pancake_count-2)-1;
+		}
+		
+		steps.add(LevelPermutationArray[i][position2]);
+	}
+	int tempcounter = 1;
+	steps.add(mainChanger);
+	for(int i = 0; i < steps.size(); i++) 
+    {
+		if(i>0) {
+       System.out.println(tempcounter + ": " + steps.get(i) + " /" + getChanger(steps.get(i-1), steps.get(i))); tempcounter++;}
+		else {
+			System.out.println(tempcounter + ": " + steps.get(i) + " /" + getChanger(input, steps.get(i)));
+			  tempcounter++;
+		}
+    }
+	
+}
+	
+	else {
+		System.out.println("Please Insert Valid Value");
+	}
+
+}}}
+	
+
+

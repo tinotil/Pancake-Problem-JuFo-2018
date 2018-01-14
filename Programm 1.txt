@@ -1,0 +1,291 @@
+
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Scanner;
+
+
+public class Programm1_Upload {
+	/*
+	 * ---Pancake-Problem---
+	 * program tests all possible permutations of n numbers and works out
+	 * the shortest way to get the stack back to sorted by size
+	 * 
+	 * Solution-Idea:
+	 * The steps taken from a chaotic stack to a stack sorted in decreasing (or increasing)
+	 * order of size can be simplified for all possible orderings (permutations) as a 
+	 * tree with the sorted stack as a starting point.
+	 * 
+	 * what the program does:
+	 * 1. get all Permutations
+	 * 2. get all Permutations all Permutations can be converted into by prefix reversal
+	 * 3. find all possible paths until a defined level through the tree "build"  up in step 2
+	 * 4. follow all paths and check, what is the best possible way to each of the Permutations
+	 * 
+	 * 
+	 * */
+	static Scanner keyboard = new Scanner(System.in);
+	static int pancake_count;
+	static int pancake_number;
+	static int realPN = 0;
+	static int pancake_count_factorial;
+	static int[] eachPerm;
+	static int permInt;
+	
+	
+	
+	static int[][] connectionArray;
+	static int[] permutationArray;
+	static String[][] pathArray;
+	static int[] travel_distanceArray;
+	static String[][] travel_pathArray;
+	
+	static int temp = 0;
+	static int temp2 = 0;
+	static int counter3 = 0;
+	
+	public static int getPermint(int inputInt) {
+		int outputInt = 0;
+		for(int i = 1; i<=inputInt; i++) {
+			outputInt+=i*Math.pow(10,(inputInt-(i-1))-1);
+				}
+		return outputInt;
+	}
+	public static int factorial(int inputInt) {
+		int outputInt = 1;
+		for(int i = 1; i<=inputInt; i++) {
+			outputInt*=i;
+				}
+		
+		return outputInt;
+	}
+	public static <Inteture> boolean contains(final int[] array, final int v) {
+	    for (final int e : array)
+	        if (e == v){
+	            return true;}
+
+	    return false;
+	}
+	public static <Inteture> boolean containsString(final String[] array, final String v) {
+	    for (final String e : array)
+	        if (e == v){
+	            return true;}
+
+	    return false;
+	}
+	public static int getIndex(final int[] array, final int v){
+		for (int i = 0; i < array.length; i++) {
+			  if (array[i] == v) {
+			    return i;
+			   
+			  }
+			 }
+		return -1;
+	}
+	
+	
+	 private static void permute(int str, int l, int r)
+	    {
+		 //get all Permutations using a recursive method
+		 
+	        if (l == r){
+	            permutationArray[temp2] = str;     temp2++;}
+	     else
+	        {
+	            for (int i = l; i <= r; i++)
+	            {
+	                str = swap(Integer.toString(str),l,i);
+	                permute(str, l+1, r);
+	                str = swap(Integer.toString(str),l,i);
+	            }
+	        }
+	    }
+	 
+	 public static void permute_repitition(int[] c, int n, int start){
+		 //get all paths using a recursive method
+		   if(String.valueOf(start).length() == n){
+			
+			  String number = String.valueOf(start);
+		   pathArray[counter3] = number.split("(?<=.)"); counter3++;}
+		  else{
+		    for(int x : c){ 
+		    	permute_repitition(c, n, start*10+x);
+		      
+		      
+		    }
+		  }
+		}
+	public static void connections(int[]arr){
+		
+	for(int i = 0; i<arr.length; i++){
+		
+		for(int b = 0; b<pancake_count-1; b++){
+		connectionArray[i][b]=getIndex(permutationArray,reverse(Integer.toString(arr[i]),b+2));
+		
+	}}}
+	public static void solve(int mayor_path , String[] input){
+		int currentPosition = connectionArray[0][mayor_path];
+		ArrayList<Integer> steps = new ArrayList<Integer>();
+		
+		
+		int lastPosition = -1;
+		int gotoStep = 0;
+		for(String nextStep : input){
+			
+			
+			
+			
+			if(steps.size() < travel_distanceArray[currentPosition]){travel_distanceArray[currentPosition]= steps.size()+1;
+			
+			//Arrays.fill(travel_pathArray[currentPosition],0);
+			String[] tempArr = new String[steps.size()];
+			for(int i=0;i< steps.size(); i++) {
+				tempArr[i]= String.valueOf(permutationArray[steps.get(i)]);
+			}
+			travel_pathArray[currentPosition]=tempArr;	}
+			
+		
+		if(connectionArray[currentPosition][Integer.parseInt(nextStep)-1] == lastPosition){
+			return;
+			
+		}
+		else{gotoStep = Integer.parseInt(nextStep)-1;}
+		steps.add(currentPosition);
+		lastPosition = currentPosition;
+		currentPosition = connectionArray[currentPosition][gotoStep];
+			
+		}
+		
+		
+	}
+
+
+	
+		 
+	public static int swap(String a, int i, int j)
+    {
+        char temp;
+        char[] charArray = a.toCharArray();
+        temp = charArray[i] ;
+        charArray[i] = charArray[j];
+        charArray[j] = temp;
+        return Integer.parseInt(String.valueOf(charArray));
+    }
+	public static int reverse(String a, int swap){
+		 
+	        char[] charArray = a.toCharArray();
+	        for(int i = 0; i < swap/2; i++){
+			 	char checker = charArray[i];
+			 	charArray[i]= charArray[swap-1-i];
+			 	charArray[swap-1-i] = checker;
+	        
+	}
+	        return Integer.parseInt(String.valueOf(charArray));
+	}
+	
+	//public static
+public static void main(String args[]){
+	
+	//get Pancake-Number an the size of the sequence and set main variables
+	System.out.println("Size of sequence:");
+	pancake_count=keyboard.nextInt();
+	System.out.println("Level to check to: (suposed Pancake-Number)");
+	pancake_number = keyboard.nextInt()+1;
+	System.out.println("What to print? Write: p for Permutations, c for Connections, s for Solutions or anything else to continue");
+	String print = keyboard.next();
+	pancake_count_factorial = factorial(pancake_count);
+	permInt = getPermint(pancake_count);
+	eachPerm = new int[pancake_count-1];
+	for(int i = 1; i< pancake_count; i++) eachPerm[i-1]=i; 
+	
+	
+	
+	
+	connectionArray = new int[pancake_count_factorial][pancake_count-1];
+	permutationArray = new int[pancake_count_factorial];
+	pathArray = new String[(int)Math.pow(pancake_count-1, pancake_number-1)][pancake_number];
+	travel_distanceArray = new int[pancake_count_factorial];
+	travel_pathArray =  new String[pancake_count_factorial][pancake_number];
+	long startTime = System.nanoTime();
+	Arrays.fill(travel_distanceArray, 100);
+	// Step 1
+	permute(permInt, 0, pancake_count-1);
+	if(print.equals("p")) {
+	System.out.println("Permutations:");
+	for(int i = 0; i<permutationArray.length; i++){
+		System.out.println(i + ": "+permutationArray[i]);
+	}}
+	//Step 2
+	connections(permutationArray);
+	if(print.equals("c")) {
+	System.out.println("Connections:");
+	for(int c = 0; c<connectionArray.length; c++){
+	System.out.println(permutationArray[c]+":");
+	
+	for(int b = 0; b<pancake_count-1; b++){
+		System.out.println(connectionArray[c][b]);
+	}
+	System.out.println("");
+}}
+	
+	/*Step 4:
+	 * All possible paths starting at each 1. Level Permutations are calculated 
+	 * Each new decision (which way to take at any point where new branches start) is represented by a number from 	
+	 * 0 to the number of new branches (pancake_count-2)-1
+	 * So all possible orderings of the numbers from 0 to the number of new branches (pancake_count-2)-1 must be found,
+	 * but this time the number of digits they have to get sorted can be anything bigger than the expected Pancake-Number (the highest level to get checked)
+	 * Each number can be used more than 1 time
+	 * */
+	permute_repitition(eachPerm, pancake_number-1, 0);
+		
+	System.out.println("---------Solving---------:");
+	
+	
+	/*Step 4:
+	 * the program follows each path starting at a specific 1. Level Permutation
+	 * if the permutations it is currently at is reached in less steps than the last time it was reached, if it was reached,
+	 * the new steps needed to reach this permutation is the number of steps needed to reach is this time
+	 * if the program is finished with all paths it moves on to the next 1. Level Permutation 
+	 * */
+	for(int i = 0; i<pancake_count-1; i++){
+	for(String[] c : pathArray){
+		solve(i,c);
+		
+	}
+	}
+	travel_distanceArray[0]= 0;
+	for(int j : connectionArray[0]){
+	travel_distanceArray[j]= 1;	
+	}
+
+	long endTime = System.nanoTime();
+	System.out.println("Took "+(endTime - startTime)/1000000 + " ms"); 
+	//get the most steps needed for an object:
+	for(int i = 0; i<travel_distanceArray.length; i++) {
+		if(travel_distanceArray[i]>realPN)realPN = travel_distanceArray[i];
+	}
+	
+	System.out.println("Pancake Number: " + realPN);
+	if(print.equals("s")) {
+
+	for(int b = 0; b< travel_distanceArray.length;b++){
+		System.out.println(permutationArray[b] + ": "+travel_distanceArray[b]);
+	}}
+	
+	/*code to get the way to from a specific  permutation to sorted state
+	 * insert: array number of permutation (printed in the beginning)
+	 * output: the permutations on the way in ordered beginning with the last step until the first
+	 * */
+	System.out.println("Write any Permutation to get the way to the sorted stage:");
+	while(true) {
+	
+	int input = keyboard.nextInt();
+	int c = getIndex(permutationArray, input);
+	System.out.println("steps: " + travel_distanceArray[c]);
+	System.out.println(input);
+	for(int i = travel_distanceArray[c]-2; i>-1;i--) {
+	System.out.println(travel_pathArray[c][i]);
+	}
+	System.out.println(permInt);
+	
+}}}
